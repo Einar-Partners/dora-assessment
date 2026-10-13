@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "dora-knowledge-base": {
+      "type": "streamable-http",
+      "url": "https://uplink.einar.partners/dora/mcp"
+    }
+  }
+}

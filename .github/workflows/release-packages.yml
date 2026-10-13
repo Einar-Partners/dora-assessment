@@ -1,0 +1,51 @@
+name: Release packages
+
+# Publishing a GitHub Release by hand builds the client zips with scripts/package.ps1 and
+# attaches them to that release, so every version E&P hands to a client has one fixed download.
+#
+# Normal versions no longer need this: auto-release.yml releases a version as soon as its
+# bump is merged, and its releases do not trigger this workflow. This one is for:
+#
+#   Tag v5.2.0-test  a dry run (publish it as a pre-release): same build, same zips
+#   Tag v5.2.0       a release made by hand, e.g. if auto-release.yml was not available
+#
+# The tag must start with v<plugin version>, so the zips can never disagree with the
+# release they are attached to. The build refuses to run if the Knowledge Base URL differs
+# between the Claude connector, the Vibe config and CONNECTORS.md.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Release tag matches the plugin version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          version=$(jq -r .version plugin/.claude-plugin/plugin.json)
+          case "$TAG" in
+            "v$version" | "v$version"-*) echo "OK: $TAG matches plugin version $version" ;;
+            *)
+              echo "::error::Release tag is $TAG but plugin/.claude-plugin/plugin.json is $version. Tag the release v$version (or v$version-test for a dry run)."
+              exit 1 ;;
+          esac
+
+      - name: Build client packages
+        shell: pwsh
+        run: ./scripts/package.ps1
+
+      - name: Attach packages to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" dist/*.zip --clobber

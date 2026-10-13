@@ -1,0 +1,145 @@
+name: Connector URL check
+
+# Guards the boundary between this public repo and anything internal.
+#
+# The repo is public and a marketplace install copies the plugin to every client, so it
+# carries nothing internal at all: no tenant or internal URL, no personal email address,
+# and no connector other than the Knowledge Base in the shipped configs. Internal
+# connector details live in private documentation, never here.
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+permissions:
+  contents: read
+
+env:
+  INTERNAL_DOC: E&P's private documentation
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      # Every tracked file except the two guards, which name the forbidden patterns
+      # themselves (this workflow and scripts/package.ps1).
+      - name: No internal or tenant URL anywhere in the repo
+        run: |
+          set -euo pipefail
+          pattern='https://[A-Za-z0-9.-]+\.sharepoint\.com|https://[A-Za-z0-9.-]+/servicenow-mcp|AIArmadillo|test\.einar\.partners'
+          offenders=$(git ls-files -z \
+            | grep -zvxE '\.github/workflows/connector-url-check\.yml|scripts/package\.ps1' \
+            | xargs -0 grep -lE "$pattern" || true)
+          if [ -n "$offenders" ]; then
+            echo "::error::Internal or tenant URL found in:"
+            echo "$offenders"
+            echo "This repo is public. Internal connector details belong in"
+            echo "${INTERNAL_DOC}; refer to them generically here"
+            echo "(e.g. 'the configured document library')."
+            exit 1
+          fi
+          echo "OK: no internal or tenant URL in the repo"
+
+      # Personal and colleague addresses must not appear in a public repo. The shared
+      # contact address and GitHub noreply addresses are the only ones allowed.
+      - name: No email address other than the shared contact
+        run: |
+          set -euo pipefail
+          found=$(git ls-files -z \
+            | xargs -0 grep -noE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' \
+            | grep -vE ':(ping@einar\.partners|noreply@[A-Za-z0-9.-]+|[0-9]+\+[A-Za-z0-9-]+@users\.noreply\.github\.com)$' || true)
+          if [ -n "$found" ]; then
+            echo "::error::Email addresses found (file:line:address):"
+            echo "$found"
+            echo "Use ping@einar.partners, or leave the address out."
+            exit 1
+          fi
+          echo "OK: no email address other than ping@einar.partners"
+
+      # plugin/ is the marketplace source: a Claude install copies exactly this folder to the
+      # client. Anything else placed in it ships to every client on their next update.
+      - name: plugin/ holds only the manifest, the connector and the skill
+        run: |
+          set -euo pipefail
+          extra=$(git ls-files plugin \
+            | grep -vxE 'plugin/\.claude-plugin/plugin\.json|plugin/\.mcp\.json|plugin/skills/dora-assessment/.+' || true)
+          if [ -n "$extra" ]; then
+            echo "::error::Unexpected files in plugin/, which every client installs:"
+            echo "$extra"
+            echo "Only .claude-plugin/plugin.json, .mcp.json and skills/dora-assessment/ belong there."
+            exit 1
+          fi
+          source=$(jq -r '.plugins[0].source' .claude-plugin/marketplace.json)
+          if [ "$source" != "./plugin" ]; then
+            echo "::error::marketplace.json source is '$source'; it must be './plugin'."
+            exit 1
+          fi
+          echo "OK: plugin/ holds only the allowed files, and the marketplace points at it"
+
+      # The shipped .mcp.json is what a client actually installs. It may declare the
+      # Knowledge Base and nothing else — an internal ServiceNow or SharePoint endpoint
+      # appearing here would reach every client on the next marketplace sync.
+      - name: Shipped .mcp.json declares only the knowledge base
+        run: |
+          set -euo pipefail
+          servers=$(grep -oE '"[A-Za-z0-9_-]+"[[:space:]]*:[[:space:]]*\{' plugin/.mcp.json \
+            | sed -E 's/"([A-Za-z0-9_-]+)".*/\1/' | grep -v '^mcpServers$' | sort -u)
+          unexpected=$(printf '%s\n' "$servers" | grep -v '^dora-knowledge-base$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "::error::.mcp.json declares servers other than dora-knowledge-base:"
+            echo "$unexpected"
+            echo "Internal connectors belong in ${INTERNAL_DOC}, added to a"
+            echo "consultant's own Claude config — not bundled into the plugin."
+            exit 1
+          fi
+          echo "OK: .mcp.json declares only dora-knowledge-base"
+
+      # A skill whose frontmatter does not parse is dropped silently by Claude and Vibe
+      # alike, and the Vibe web app rejects a description over 500 characters.
+      - name: Skill frontmatter parses and fits every client
+        run: |
+          set -euo pipefail
+          pip install --quiet pyyaml
+          python3 - <<'EOF'
+          import sys, yaml
+          text = open("plugin/skills/dora-assessment/SKILL.md", encoding="utf-8").read()
+          parts = text.split("---", 2)
+          if len(parts) < 3 or parts[0].strip():
+              sys.exit("::error::SKILL.md does not start with a --- frontmatter block.")
+          try:
+              meta = yaml.safe_load(parts[1])
+          except yaml.YAMLError as e:
+              sys.exit(f"::error::SKILL.md frontmatter is not valid YAML: {e}")
+          desc = meta.get("description") or ""
+          if meta.get("name") != "dora-assessment" or not desc:
+              sys.exit("::error::SKILL.md frontmatter needs name: dora-assessment and a description.")
+          if len(desc) > 500:
+              sys.exit(f"::error::Skill description is {len(desc)} characters; the Vibe web app allows 500.")
+          print(f"OK: frontmatter parses, description is {len(desc)} characters")
+          EOF
+
+      # The client packages must build from the allowlist without shipping anything forbidden,
+      # and the Knowledge Base URL must agree across the files that carry it.
+      - name: Client packages build
+        shell: pwsh
+        run: ./scripts/package.ps1
+
+      # The Mistral Vibe distribution carries its connector in vibe/config.snippet.toml,
+      # which the install script appends to a client's ~/.vibe/config.toml. Same rule:
+      # the Knowledge Base and nothing else.
+      - name: Shipped Vibe config declares only the knowledge base
+        run: |
+          set -euo pipefail
+          blocks=$(grep -cE '^[[:space:]]*\[\[mcp_servers\]\]' vibe/config.snippet.toml || true)
+          names=$(grep -oE '^[[:space:]]*name[[:space:]]*=[[:space:]]*"[^"]*"' vibe/config.snippet.toml \
+            | sed -E 's/.*"([^"]*)"/\1/' | sort -u)
+          if [ "$blocks" -ne 1 ] || [ "$names" != "knowledge_base" ]; then
+            echo "::error::vibe/config.snippet.toml must declare exactly one server, knowledge_base."
+            echo "Found ${blocks} [[mcp_servers]] block(s), named: ${names:-none}"
+            echo "Internal connectors belong in ${INTERNAL_DOC}, not in the shipped config."
+            exit 1
+          fi
+          echo "OK: vibe/config.snippet.toml declares only knowledge_base"

@@ -1,0 +1,84 @@
+DORA Assessment Plugin - Proprietary Licence
+
+Copyright (c) 2026 Einar & Partners.
+All rights reserved.
+
+1. Definitions
+
+   "Software" means the files in this repository and any package built from them,
+   including the skill, its reference files, connector configuration, installers and
+   documentation.
+
+   "Licensor" means Einar & Partners.
+
+   "Licensee" means an organisation that holds a valid, current agreement with the
+   Licensor for access to the E&P Knowledge Base (the "Agreement"), and its employees
+   and contractors acting on its behalf.
+
+2. Publication is not a grant
+
+   The Software is published so that Licensees can install it. Making it publicly
+   available does not grant any right to use, copy, modify or distribute it to anyone
+   who is not a Licensee, except the right to view it.
+
+3. Licence grant
+
+   For the term of the Agreement, the Licensor grants the Licensee a non-exclusive,
+   non-transferable, non-sublicensable, revocable licence to:
+
+   a. install and run the Software in AI clients used by the Licensee; and
+   b. use it, together with the E&P Knowledge Base, for the Licensee's own internal
+      assessments of compliance with Regulation (EU) 2022/2554 (DORA); and
+   c. make the configuration changes the documentation describes, such as adding a
+      tenant-specific section to CONNECTORS.md in the Licensee's installed copy.
+
+4. Restrictions
+
+   The Licensee must not:
+
+   a. distribute, sell, rent, sublicense or otherwise make the Software, or a modified
+      version of it, available to any third party;
+   b. use the Software, or the assessment method it contains, to provide assessment,
+      audit or consulting services to third parties;
+   c. use the Software, or output obtained with it, to build or train a product or
+      service that competes with the Software or the E&P Knowledge Base;
+   d. remove or alter any copyright or licence notice.
+
+5. Access keys
+
+   Access to the E&P Knowledge Base requires a personal or organisational key issued
+   under the Agreement. The Software contains no key and grants no access by itself.
+   Keys are governed by the Agreement.
+
+6. No advice, no attestation
+
+   Output produced with the Software is advisory. It is not legal advice and does not
+   constitute a regulatory attestation, certification or audit opinion. Decisions
+   remain with the Licensee.
+
+7. No warranty
+
+   The Software is provided "as is", without warranty of any kind, express or implied,
+   including fitness for a particular purpose and non-infringement, except as the
+   Agreement expressly provides.
+
+8. Limitation of liability
+
+   To the maximum extent permitted by law, the Licensor is not liable for any indirect,
+   incidental or consequential damages, or for any loss arising from reliance on output
+   produced with the Software. Any further limit on the Licensor's liability is set out
+   in the Agreement.
+
+9. Termination
+
+   This licence ends automatically when the Agreement ends or when the Licensee breaches
+   these terms. On termination the Licensee must stop using the Software and remove all
+   installed copies.
+
+10. Precedence and governing law
+
+   If these terms conflict with the Agreement, the Agreement prevails. These terms are
+   governed by the law that governs the Agreement, and disputes are subject to the
+   courts named in the Agreement.
+
+Contact: ping@einar.partners

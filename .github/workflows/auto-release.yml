@@ -1,0 +1,97 @@
+name: Auto release
+
+# A merge that raises the version in plugin/.claude-plugin/plugin.json ships it: this
+# workflow tags v<version>, builds the client zips with scripts/package.ps1 and publishes a
+# GitHub Release with them attached. A merge that leaves the version alone does nothing.
+#
+# The marketplace route ships on the same merge (Claude Code reads plugin/ from the default
+# branch), so marketplace and zip clients get a new version at the same moment.
+#
+# Dry runs stay manual: publish a pre-release tagged v<version>-test, which
+# release-packages.yml builds. GitHub does not start workflows from a release created with
+# the workflow token, so a release made here never triggers that workflow; the zips are
+# built in this job instead.
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One run at a time, so two quick merges cannot both try to create the same release.
+concurrency:
+  group: auto-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Is this version already released?
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(jq -r .version plugin/.claude-plugin/plugin.json)
+          tag="v$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+          # gh release view also finds drafts. A published release means there is nothing to
+          # do. A draft is what an interrupted run leaves behind, so it is removed and rebuilt.
+          if draft=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null); then
+            if [ "$draft" = "false" ]; then
+              echo "$tag is already released; nothing to do."
+              echo "release=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "Removing the unfinished draft $tag from an earlier run."
+            gh release delete "$tag" --yes
+          fi
+
+          # A tag without a release (pushed by hand) is only reused if it is on this commit;
+          # otherwise the zips would be built from different code than the tag points at.
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+            git fetch --quiet --depth=1 origin "refs/tags/$tag:refs/tags/$tag"
+            tagged=$(git rev-parse "$tag^{commit}")
+            if [ "$tagged" != "$GITHUB_SHA" ]; then
+              echo "::error::Tag $tag already exists on $tagged, not on this commit ($GITHUB_SHA). Delete the tag, or raise the version in plugin.json, then re-run this workflow."
+              exit 1
+            fi
+          fi
+
+          echo "Releasing $tag."
+          echo "release=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build client packages
+        if: steps.check.outputs.release == 'true'
+        shell: pwsh
+        run: ./scripts/package.ps1
+
+      # Created as a draft first, with the zips attached, and only then published. A run that
+      # fails halfway leaves a draft that clients cannot see and the next run replaces, never
+      # a public release with missing zips.
+      - name: Publish the release
+        if: steps.check.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.check.outputs.tag }}
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          set -euo pipefail
+          sed "s/{{VERSION}}/$VERSION/g" .github/release-notes.md > "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" dist/*.zip \
+            --draft \
+            --target "$GITHUB_SHA" \
+            --title "DORA Assessment $VERSION" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            --generate-notes
+          gh release edit "$TAG" --draft=false --latest
+          echo "Published $TAG with:"
+          ls -1 dist/*.zip

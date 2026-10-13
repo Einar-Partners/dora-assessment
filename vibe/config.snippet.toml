@@ -1,0 +1,17 @@
+
+# --- E&P DORA Assessment: Knowledge Base connector (begin) ---
+# The Mistral Vibe counterpart of the plugin's .mcp.json. It declares the E&P Knowledge
+# Base and nothing else; CI fails the build if this file declares any other server.
+#
+# The access key is read from EP_KNOWLEDGE_KEY and sent as "Authorization: Bearer <key>".
+# Set it in your environment or in ~/.vibe/.env:
+#   EP_KNOWLEDGE_KEY=ecl_...
+[[mcp_servers]]
+name = "knowledge_base"
+transport = "streamable-http"
+url = "https://uplink.einar.partners/dora/mcp"
+
+[mcp_servers.auth]
+type = "static"
+api_key_env = "EP_KNOWLEDGE_KEY"
+# --- E&P DORA Assessment: Knowledge Base connector (end) ---

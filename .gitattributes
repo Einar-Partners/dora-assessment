@@ -1,0 +1,4 @@
+# Shell scripts must keep LF, or bash on macOS/Linux fails on the carriage returns.
+*.sh  text eol=lf
+# PowerShell scripts get CRLF, which Windows PowerShell 5.1 handles most reliably.
+*.ps1 text eol=crlf

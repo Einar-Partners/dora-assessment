@@ -1,0 +1,10 @@
+# gitleaks configuration: the default rules plus E&P Knowledge Base access keys.
+[extend]
+useDefault = true
+
+[[rules]]
+id = "ep-knowledge-base-key"
+description = "E&P Knowledge Base access key"
+# ecl_ followed by the base64url-encoded 256-bit secret (43 characters).
+regex = '''\becl_[A-Za-z0-9_-]{32,}'''
+keywords = ["ecl_"]

@@ -1,0 +1,13 @@
+{
+  "name": "einar-partners-marketplace",
+  "owner": {
+    "name": "Einar & Partners"
+  },
+  "plugins": [
+    {
+      "name": "dora-assessment",
+      "source": "./plugin",
+      "description": "Assess DORA evidence across all five pillars (ICT risk management, incident reporting, resilience testing and TLPT, Register of Information, information sharing) against your own ServiceNow data, using the E&P Knowledge Base."
+    }
+  ]
+}
