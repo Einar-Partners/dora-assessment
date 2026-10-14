@@ -52,14 +52,15 @@ not GitHub's "Source code" archives.
 | You use | Install |
 |---|---|
 | **Claude Code** | `/plugin marketplace add Einar-Partners/dora-assessment`, then `/plugin install dora-assessment@einar-partners-marketplace` |
-| **Claude Desktop / claude.ai** | Download `dora-plugin-<version>-claude.zip`, then Plugins → Upload local plugin (on Team and Enterprise plans, an admin may do this for the organisation) |
+| **Claude Desktop / claude.ai** | Download `dora-plugin-<version>-claude.zip`, then Plugins → Upload local plugin (on Team and Enterprise plans, an admin may do this for the organisation).<br><br>Alternatively, go to Plugins & skills → Sync from GitHub and enter the URL of this repo: `https://github.com/Einar-Partners/dora-assessment`. With this method, your plugin version stays up to date. |
 | **ChatGPT** | A workspace admin uploads `dora-assessment-<version>-chatgpt.zip`; see [chatgpt/README.md](chatgpt/README.md) |
 | **Mistral Vibe** (CLI or web) | See [vibe/README.md](vibe/README.md) |
 
 **Updates.** In Claude Code, marketplaces other than Anthropic's own do not update
 automatically by default. Turn on auto-update for this marketplace in `/plugin`, or run
-`/plugin marketplace update einar-partners-marketplace`. Zip installs are updated by
-uploading the zip of the new release. What changed in each version is in
+`/plugin marketplace update einar-partners-marketplace`. In Claude Desktop / claude.ai,
+a plugin added with Sync from GitHub stays up to date on its own. Zip installs are
+updated by uploading the zip of the new release. What changed in each version is in
 [CHANGELOG.md](CHANGELOG.md).
 
 ## Sign in
