@@ -24,6 +24,11 @@ The connector is called `dora-knowledge-base`, as in Claude, and points at
 - **Sign-in is OAuth only.** ChatGPT does not accept API keys or custom bearer headers, so
   the `Authorization: Bearer ecl_…` route is not offered. The browser sign-in asks for the
   `ecl_…` key, as it does in Claude.
+- **Not connected.** If a user calls the skill before the Knowledge Base is connected, it
+  stops and tells them to connect `dora-knowledge-base` at
+  `https://uplink.einar.partners/dora/mcp`. A workspace admin enables the plugin first;
+  then each user authorises the connector with their own `ecl_…` key. No key? Don't email
+  us: request one at https://mcp.einar.partners.
 - **Tool names.** ChatGPT may prefix the Knowledge Base tools with the server name. The
   ChatGPT `SKILL.md` says so.
 - **No gate hook.** Plugins with lifecycle hooks cannot be submitted to ChatGPT, and the

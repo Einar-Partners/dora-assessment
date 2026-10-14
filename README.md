@@ -75,6 +75,12 @@ account was provisioned. Programmatic clients can send it as an
 `Authorization: Bearer ecl_…` header instead and skip the browser step. See
 `plugin/skills/dora-assessment/CONNECTORS.md` for both routes.
 
+The connector's URL is `https://uplink.einar.partners/dora/mcp`. If you call
+`/dora-assessment` before connecting, the assistant stops and tells you to connect. In
+Claude Code, run `/mcp` and authenticate `dora-knowledge-base`. In Claude Desktop /
+claude.ai, open the connector settings, connect `dora-knowledge-base` and paste your
+`ecl_…` key. No key? Don't email us: request one at https://mcp.einar.partners.
+
 Treat the key like a password. If it is lost or exposed, see [SECURITY.md](SECURITY.md).
 
 If you have a ServiceNow MCP connector, add it to **your own** client
