@@ -42,6 +42,12 @@ EP_KNOWLEDGE_KEY=ecl_…
 Vibe sends it as `Authorization: Bearer ecl_…`, the programmatic route described in
 [CONNECTORS.md](../plugin/skills/dora-assessment/CONNECTORS.md). There is no browser sign-in step.
 
+**If the skill says it is not connected:** the Knowledge Base connector (`knowledge_base`,
+`https://uplink.einar.partners/dora/mcp`) is missing or has no key. In the CLI, run the
+installer again and check that `~/.vibe/.env` holds `EP_KNOWLEDGE_KEY=ecl_…`. In the web
+app, add it under `Connectors` → `+ Add Connector` → `Custom MCP Connector` with that URL
+and sign in with the key. No key? Don't email us: request one at https://mcp.einar.partners.
+
 To update, pull the repo (or unzip the new `mistral-cli` package) and run the script again.
 It replaces the skill, and if the Knowledge Base has moved it also points your existing
 `knowledge_base` entry at the new URL, changing nothing else in `config.toml`. The script

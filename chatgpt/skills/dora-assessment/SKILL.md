@@ -25,7 +25,11 @@ Read the reference file for every pillar a question touches, before Gate 2. If `
 
 ## Step 0 — Scope, then evidence, before anything else
 
-Every question, of every kind, passes these two gates in this order. Nothing else in this skill runs until both are passed.
+Every question, of every kind, passes these three gates in this order. Nothing else in this skill runs until all are passed.
+
+### Gate 0 — Is the Knowledge Base connected?
+
+Call `list_documents` (Gate 1 needs it anyway; the name may carry a server prefix). If the tool is missing, or the call fails with an authorisation, sign-in or connection error, **stop**: do not answer from general knowledge or ask for evidence. Reply briefly: this skill needs the **DORA Knowledge Base** connector, which is not connected. Enable `dora-knowledge-base` (`https://uplink.einar.partners/dora/mcp`; a workspace admin may need to enable the plugin first), sign in with the `ecl_…` key E&P sent you (no key? don't email us, request one at https://mcp.einar.partners), then ask again. If it drops out later, say the same.
 
 ### Gate 1 — Is the question in scope?
 
@@ -96,14 +100,10 @@ A description tells you how the user says their environment is set up. Nothing i
 
 6. **Compare** the Knowledge Base criteria against the evidence actually retrieved. Produce findings and improvement advice using the output contract below. Never produce a finding that isn't backed by something actually retrieved in this run.
 
-If a step's source is unreachable, that is a **limitation of the assessment**, never a finding about the entity, and never treated as silent evidence of compliance.
-
 ## Sources, in strict priority
 
 1. **Knowledge Base MCP** — the only source of assessment criteria: the documents `list_documents` returns.
 2. **The user's own evidence** — the current state of their records, however Step 0 established it. This is the only source of *what is true in their environment*; the Knowledge Base never is.
-
-Never assess against general knowledge of DORA that isn't in the Knowledge Base. Where nothing in the library covers something, say so and mark it `out of scope` rather than inventing a criterion.
 
 ## Traversal
 
@@ -151,8 +151,6 @@ Every rule you apply belongs to exactly one class:
 | Timeliness | Did an action happen within the time limit the obligation sets? |
 | Derivation integrity | Was a recorded result actually produced by an analysis? |
 
-Cross-record pattern checks matter — don't skip them just because per-record checks passed.
-
 **Derivation integrity.** A record may report an assessment as complete, with a derived value, where no inputs were ever supplied — a questionnaire with no questions, a rollup contradicting its own detail rows, a tier classification inherited from an empty assessment, an incident marked "not major" with no threshold answers behind it. The value looks like evidence and is not. Where a value is **derived**, establish that inputs exist before treating it as determined. Where a derived value has propagated into other records, report the propagation: one unfounded figure at the assessment layer becomes a classification, an objective and a plan target downstream, and no single record shows that it is unsupported.
 
 ## Severity — fixed, never assigned at runtime
@@ -180,13 +178,9 @@ Carry the tag of the statement a finding rests on into the finding. Never presen
 - Never answer an in-scope question — assessment or informational — without evidence the user supplied. With no source at all, stop and say what is needed (Step 0, Gate 2).
 - Never state or imply that the Knowledge Base knows anything about the user's environment. It holds criteria, never their data.
 - Never invent a finding. Assert only what retrieved data supports.
-- Never infer compliance from silence.
 - Every finding names the obligation and the check applied (e.g. `pillar2-check` Check 1), or is marked ad-hoc / out of scope if no check applies.
-- Never answer a question on a pillar the library does not hold as if it did.
 - Never state a date, time, count, identifier, or LEI that was not actually retrieved.
 - Never cite an article, paragraph or RTS/ITS reference that does not appear in a document retrieved in this run. Cite it as the document gives it, with no added paragraph numbers.
-- If a source is unreachable, that's a limitation of the assessment — never a finding about the entity.
-- Never present an unverified reference as verified.
 - Never report absence without having satisfied the Enumeration rule.
 - Never treat a derived value as evidence without establishing its inputs.
 - Never exceed what was asked.

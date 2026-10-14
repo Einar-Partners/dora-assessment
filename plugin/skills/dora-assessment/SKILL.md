@@ -25,7 +25,18 @@ Read the reference file for every pillar a question touches, before Gate 2. If `
 
 ## Step 0 — Scope, then evidence, before anything else
 
-Every question, of every kind, passes these two gates in this order. Nothing else in this skill runs until both are passed.
+Every question, of every kind, passes these three gates in this order. Nothing else in this skill runs until all are passed.
+
+### Gate 0 — Is the Knowledge Base connected?
+
+Call `list_documents` (Gate 1 needs it anyway; the tool name may carry a server prefix). If the tool is not available in this session, or the call fails with an authorisation, sign-in or connection error, **stop**. Do not answer from general knowledge and do not ask for evidence yet. Reply briefly:
+
+1. This skill needs the **DORA Knowledge Base** connector, and it is not connected yet.
+2. Add or enable the connector `dora-knowledge-base` with the URL `https://uplink.einar.partners/dora/mcp`, then connect it in your client's connector settings. A browser window opens and asks for your access key: paste the `ecl_…` key E&P sent you and approve. In Mistral Vibe there is no browser step: put the key in `~/.vibe/.env` as `EP_KNOWLEDGE_KEY=ecl_…`.
+3. No key? Don't email us: request one at https://mcp.einar.partners.
+4. Once connected, ask again and the assessment will start.
+
+Then wait. If the Knowledge Base drops out later in the session, say the same. A failed connection is a limitation of the session, never a finding about the user's entity.
 
 ### Gate 1 — Is the question in scope?
 
