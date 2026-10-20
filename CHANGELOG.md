@@ -2,16 +2,22 @@
 
 Client-visible changes, newest first.
 
-## 5.3.1
+## 5.3.2
 
-- The short first reply is now under 180 words (was 250) and follows a fixed layout: "I
-  checked 22 functions. 8 have problems.", then "The three worth fixing first", "One thing
-  across the whole register", "One thing that's fine", and "Want the other five, or more
-  detail on any of these?"
+- The short first reply is now under 180 words (was 250).
 - Each problem is two short sentences at most: what is wrong, naming the record in its own
   words and dates, then what to do, starting "The regulation requires" or "We recommend".
-  Severity labels and article numbers move to the full report; severity still decides the
-  order.
+  This replaces the separate "The regulation requires this." / "We recommend this." label.
+- The pattern line and the "one thing that's fine" line are one sentence each.
+
+## 5.3.1
+
+- The short first reply follows a fixed layout: "I checked 22 functions. 8 have problems.",
+  then "The three worth fixing first", "One thing across the whole register", "One thing
+  that's fine", and "Want the other five, or more detail on any of these?"
+- Each problem names the record and uses its own words and dates, and ends with "The
+  regulation requires this." or "We recommend this." Severity labels and article numbers
+  move to the full report; severity still decides the order.
 - The opening line mentions checks that could not be tested only when there are any. A
   likely cause in the pattern line is marked as one ("It looks like …").
 
