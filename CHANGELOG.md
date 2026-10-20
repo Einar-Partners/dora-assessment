@@ -2,6 +2,18 @@
 
 Client-visible changes, newest first.
 
+## 5.3.0
+
+- An open question ("check our register", "assess us against DORA") now gets a short first
+  reply of at most 250 words, in plain words. It names what was checked and how many
+  checks the source could test, then the three biggest problems, one pattern across the
+  data and one thing that works, and offers the full report. The full report is unchanged
+  and follows when you ask for it. Every check still runs; only the first reply is shorter.
+- Problems are ranked by severity, then by how many records they affect, so the same data
+  always gives the same three.
+- Each problem says either "the regulation requires" or "we recommend", so law and E&P
+  advice stay apart.
+
 ## 5.2.4
 
 - The skill no longer names a specific ERP system for the optional document library: it
