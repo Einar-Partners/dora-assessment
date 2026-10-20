@@ -2,6 +2,17 @@
 
 Client-visible changes, newest first.
 
+## 5.3.1
+
+- The short first reply follows a fixed layout: "I checked 22 functions. 8 have problems.",
+  then "The three worth fixing first", "One thing across the whole register", "One thing
+  that's fine", and "Want the other five, or more detail on any of these?"
+- Each problem names the record and uses its own words and dates, and ends with "The
+  regulation requires this." or "We recommend this." Severity labels and article numbers
+  move to the full report; severity still decides the order.
+- The opening line mentions checks that could not be tested only when there are any. A
+  likely cause in the pattern line is marked as one ("It looks like …").
+
 ## 5.3.0
 
 - An open question ("check our register", "assess us against DORA") now gets a short first
