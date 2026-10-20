@@ -1,6 +1,6 @@
 {
   "name": "dora-assessment",
-  "version": "5.3.1",
+  "version": "5.3.2",
   "description": "Assess DORA (Digital Operational Resilience Act) compliance evidence across all five pillars — ICT risk management, incident reporting, resilience testing and TLPT, the Register of Information and ICT third-party risk, and information sharing — by cross-checking the E&P Knowledge Base against your own ServiceNow data.",
   "author": {
     "name": "Einar & Partners"

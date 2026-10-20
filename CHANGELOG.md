@@ -2,6 +2,14 @@
 
 Client-visible changes, newest first.
 
+## 5.3.2
+
+- The short first reply is now under 180 words (was 250).
+- Each problem is two short sentences at most: what is wrong, naming the record in its own
+  words and dates, then what to do, starting "The regulation requires" or "We recommend".
+  This replaces the separate "The regulation requires this." / "We recommend this." label.
+- The pattern line and the "one thing that's fine" line are one sentence each.
+
 ## 5.3.1
 
 - The short first reply follows a fixed layout: "I checked 22 functions. 8 have problems.",
